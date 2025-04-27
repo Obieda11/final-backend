@@ -110,5 +110,35 @@ switch ($endpoint) {
         }
         break;
     
-
+    case 'delete_quiz':
+        if ($method == 'DELETE') {
+            $data = getBody();
+            $quiz_id = intval($data['id']);
+            
+            $sql = "DELETE FROM quizzes WHERE id=$quiz_id";
+            
+            if ($conn->query($sql)) {
+                echo json_encode(["status" => "success", "message" => "Quiz deleted"]);
+            } else {
+                echo json_encode(["status" => "error", "message" => $conn->error]);
+            }
+        }
+        break;
+    
+    case 'create_question':
+        if ($method == 'POST') {
+            $data = getBody();
+            $quiz_id = intval($data['quiz_id']);
+            $question_text = $conn->real_escape_string($data['question_text']);
+            $question_type = $conn->real_escape_string($data['question_type']);
+            
+            $sql = "INSERT INTO questions (quiz_id, question_text, question_type) VALUES ($quiz_id, '$question_text', '$question_type')";
+            
+            if ($conn->query($sql)) {
+                echo json_encode(["status" => "success", "message" => "Question created"]);
+            } else {
+                echo json_encode(["status" => "error", "message" => $conn->error]);
+            }
+        }
+        break;
 ?>
