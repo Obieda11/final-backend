@@ -81,5 +81,34 @@ switch ($endpoint) {
         }
         break;
 
+    case 'get_quizzes':
+        if ($method == 'GET') {
+            $sql = "SELECT * FROM quizzes";
+            $result = $conn->query($sql);
+            
+            $quizzes = [];
+            while ($row = $result->fetch_assoc()) {
+                $quizzes[] = $row;
+            }
+            echo json_encode(["status" => "success", "quizzes" => $quizzes]);
+        }
+        break;
         
+    case 'edit_quiz':
+        if ($method == 'PUT') {
+            $data = getBody();
+            $quiz_id = intval($data['id']);
+            $title = $conn->real_escape_string($data['title']);
+            $description = $conn->real_escape_string($data['description']);
+            $sql = "UPDATE quizzes SET title='$title', description='$description' WHERE id=$quiz_id";
+            
+            if ($conn->query($sql)) {
+                echo json_encode(["status" => "success", "message" => "Quiz updated"]);
+            } else {
+                echo json_encode(["status" => "error", "message" => $conn->error]);
+            }
+        }
+        break;
+    
+
 ?>
