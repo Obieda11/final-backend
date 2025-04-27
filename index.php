@@ -141,4 +141,43 @@ switch ($endpoint) {
             }
         }
         break;
+
+    case 'get_questions':
+        if ($method == 'GET') {
+            if (isset($_GET['quiz_id'])) {
+                $quiz_id = intval($_GET['quiz_id']);
+                $sql = "SELECT * FROM questions WHERE quiz_id=$quiz_id";
+                $result = $conn->query($sql);
+                
+                
+                $questions = [];
+                while ($row = $result->fetch_assoc()) {
+                    $questions[] = $row;
+                }
+                
+                echo json_encode(["status" => "success", "questions" => $questions]);
+            } else {
+                echo json_encode(["status" => "error", "message" => "quiz_id required"]);
+            }
+        }
+        break;
+    
+    case 'edit_question':
+        if ($method == 'PUT') {
+            $data = getBody();
+            $question_id = intval($data['id']);
+            $question_text = $conn->real_escape_string($data['question_text']);
+            $question_type = $conn->real_escape_string($data['question_type']);
+            
+            $sql = "UPDATE questions SET question_text='$question_text', question_type='$question_type' WHERE id=$question_id";
+            
+            if ($conn->query($sql)) {
+                echo json_encode(["status" => "success", "message" => "Question updated"]);
+            } else {
+                echo json_encode(["status" => "error", "message" => $conn->error]);
+            }
+        }
+        break;
+
+        
 ?>
