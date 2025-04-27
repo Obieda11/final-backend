@@ -179,5 +179,27 @@ switch ($endpoint) {
         }
         break;
 
+
+
+    case 'delete_question':
+        if ($method == 'DELETE') {
+            $data = getBody();
+            $question_id = intval($data['id']);
+            
+            $sql = "DELETE FROM questions WHERE id=$question_id";
+            
+            if ($conn->query($sql)) {
+                echo json_encode(["status" => "success", "message" => "Question deleted"]);
+            } else {
+                echo json_encode(["status" => "error", "message" => $conn->error]);
+            }
+        }
+        break;
         
+    default:
+    echo json_encode(["status" => "error", "message" => "Invalid endpoint"]);
+}
+
+$conn->close();
+
 ?>
