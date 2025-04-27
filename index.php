@@ -65,6 +65,21 @@ switch ($endpoint) {
             }
         }
         break;
+    
+    case 'create_quiz':
+        if ($method == 'POST') {
+            $data = getBody();
+            $title = $conn->real_escape_string($data['title']);
+            $description = $conn->real_escape_string($data['description']);
+            $created_by = intval($data['created_by']);
+            $sql = "INSERT INTO quizzes (title, description, created_by) VALUES ('$title', '$description', $created_by)";
+            if ($conn->query($sql)) {
+                echo json_encode(["status" => "success", "message" => "Quiz created"]);
+            } else {
+                echo json_encode(["status" => "error", "message" => $conn->error]);
+            }
+        }
+        break;
 
-
+        
 ?>
