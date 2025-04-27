@@ -41,5 +41,30 @@ switch ($endpoint) {
             }
         }
         break;
-        
+
+
+
+    case 'login':
+        if ($method == 'POST') {
+            $data = getBody();
+            $email = $conn->real_escape_string($data['email']);
+            $password = $data['password'];
+    
+            $sql = "SELECT * FROM users WHERE email = '$email'";
+            $result = $conn->query($sql);
+    
+            if ($result->num_rows == 1) {
+                $user = $result->fetch_assoc();
+                if (password_verify($password, $user['password_hash'])) {
+                    echo json_encode(["status" => "success", "user" => ["id" => $user['id'], "username" => $user['username']]]);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "Invalid password"]);
+                }
+            } else {
+                echo json_encode(["status" => "error", "message" => "User not found"]);
+            }
+        }
+        break;
+
+
 ?>
