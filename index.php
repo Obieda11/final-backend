@@ -11,4 +11,35 @@ if ($conn->connect_error) {
     die(json_encode(["status" => "error", "message" => "Connection failed: " . $conn->connect_error]));
 }
 
+
+
+header('Content-Type: application/json');
+$method = $_SERVER['REQUEST_METHOD'];
+
+$path = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
+$endpoint = $path[count($path) - 1];
+
+function getBody() {
+    return json_decode(file_get_contents('php://input'), true);
+}
+
+switch ($endpoint) {
+
+    case 'register':
+        if ($method == 'POST') {
+            $data = getBody();
+            $username = $conn->real_escape_string($data['username']);
+            $email = $conn->real_escape_string($data['email']);
+            $password = password_hash($data['password'], PASSWORD_BCRYPT);
+
+            $sql = "INSERT INTO users (username, email, password_hash) VALUES ('$username', '$email', '$password')";
+
+            if ($conn->query($sql)) {
+                echo json_encode(["status" => "success", "message" => "User registered"]);
+            } else {
+                echo json_encode(["status" => "error", "message" => $conn->error]);
+            }
+        }
+        break;
+        
 ?>
